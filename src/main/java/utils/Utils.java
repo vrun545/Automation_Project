@@ -12,9 +12,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -55,24 +57,18 @@ public class Utils {
     }
     
     
-//    This method is for taking screenshot of Failed Test Cases
-    public static String takeScreenShot(WebDriver driver, String methodName) {
-        // Convert WebDriver object to TakesScreenshot
-        TakesScreenshot ts = (TakesScreenshot) driver;
-        File source = ts.getScreenshotAs(OutputType.FILE);
+    // Method to take a screenshot
+    public static String takeScreenShot(WebDriver driver, String testCaseName) {
+        String timeStamp = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss").format(new Date(0));
+        String screenshotPath = "src/main/java/reports/screenshots/" + testCaseName + "_" + timeStamp + ".png";
+        File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         try {
-            String directory = "src/main/java/reports/extentreports/screenshots/";
-            new File(directory).mkdirs();
-            Path destinationPath = Paths.get(directory + methodName + "_" + getCurrentTimeStamp() + ".png");
-            Files.copy(source.toPath(), destinationPath);
-            System.out.println("Screenshot taken: " + destinationPath);
-            return destinationPath.toAbsolutePath().toString();
+            FileUtils.copyFile(srcFile, new File(screenshotPath));
         } catch (IOException e) {
             e.printStackTrace();
-            return "No File";
         }
+        return screenshotPath;
     }
-
     
 //    This method is for capturing screenshot in real time
     public static String getCurrentTimeStamp() {
